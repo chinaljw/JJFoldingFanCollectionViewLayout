@@ -188,7 +188,7 @@ typedef NS_ENUM(NSInteger, JJFoldingFanCollectionViewLayoutType)
 
  @return 处在开始角度的indexPath
  */
-- (NSIndexPath *)indexPathAtStartAngle;
+- (NSIndexPath *)indexPathOfItemAtStartAngle;
 
 @end
 
@@ -271,6 +271,6 @@ typedef NS_ENUM(NSInteger, JJFoldingFanCollectionViewLayoutType)
  @param indexPath indexPath
  @return indexPath是否在开始角度上
  */
-- (BOOL)JJ_indexPathIsAtStartAngle:(NSIndexPath *)indexPath;
+- (BOOL)JJ_itemAtIndexPathIsAtStartAngle:(NSIndexPath *)indexPath;
 
 @end

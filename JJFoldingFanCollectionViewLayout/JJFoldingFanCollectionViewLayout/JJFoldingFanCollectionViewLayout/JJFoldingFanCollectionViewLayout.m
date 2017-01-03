@@ -353,7 +353,7 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
  
  @return 处在开始角度的indexPath
  */
-- (NSIndexPath *)indexPathAtStartAngle
+- (NSIndexPath *)indexPathOfItemAtStartAngle
 {
     return [NSIndexPath indexPathForRow:self.currentMarkIndex inSection:0];
 }
@@ -381,11 +381,11 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
 }
 
 
-- (BOOL)JJ_indexPathIsAtStartAngle:(NSIndexPath *)indexPath
+- (BOOL)JJ_itemAtIndexPathIsAtStartAngle:(NSIndexPath *)indexPath
 {
     JJFoldingFanCollectionViewLayout *layout = [self JJ_foldingFanCollectionViewLayout];
     if (layout) {
-        return indexPath.row == [layout indexPathAtStartAngle].row;
+        return indexPath.row == [layout indexPathOfItemAtStartAngle].row;
     }
     else
     {
