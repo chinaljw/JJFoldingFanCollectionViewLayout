@@ -362,7 +362,7 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
 }
 
 
-- (BOOL)indexPathIsAtStartAngle:(NSIndexPath *)indexPath
+- (BOOL)JJ_indexPathIsAtStartAngle:(NSIndexPath *)indexPath
 {
     JJFoldingFanCollectionViewLayout *layout = [self JJ_foldingFanCollectionViewLayout];
     if (layout) {
