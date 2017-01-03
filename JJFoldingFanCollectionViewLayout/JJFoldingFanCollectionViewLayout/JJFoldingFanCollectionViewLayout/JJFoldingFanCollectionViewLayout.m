@@ -44,12 +44,16 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
 {
     self = [super init];
     if (self) {
-        self.visibleAngleRange = JJMakeAngleRange(0.f, M_PI);
-        self.layoutType = JJFoldingFanCollectionViewLayoutTypeCircle;
-        self.originPosition = JJFoldingFanCollectionViewLayoutOriginPositionBottom;
-        self.scrollDirection = JJFoldingFanCollectionViewLayoutScrollDirectionHorizontal;
-        self.speed = M_PI / 180.f;
-        self.dynamic = YES;
+        [self setUp];
+    }
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (self) {
+        [self setUp];
     }
     return self;
 }
@@ -81,6 +85,11 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
     }
     if (self.collectionView.showsHorizontalScrollIndicator != self.showsScrollIndicator) {
         self.collectionView.showsHorizontalScrollIndicator = self.showsScrollIndicator;
+    }
+    
+    //关闭预加载，不关会有奇怪的效果，暂时没想去解决
+    if (self.collectionView.prefetchingEnabled) {
+        self.collectionView.prefetchingEnabled = NO;
     }
     
     self.itemCount = [self.collectionView numberOfItemsInSection:0];
@@ -277,6 +286,16 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
 }
 
 #pragma mark - Private
+- (void)setUp
+{
+    self.visibleAngleRange = JJMakeAngleRange(0.f, M_PI);
+    self.layoutType = JJFoldingFanCollectionViewLayoutTypeCircle;
+    self.originPosition = JJFoldingFanCollectionViewLayoutOriginPositionBottom;
+    self.scrollDirection = JJFoldingFanCollectionViewLayoutScrollDirectionHorizontal;
+    self.speed = M_PI / 180.f;
+    self.dynamic = YES;
+}
+
 - (BOOL)angleIsVisible:(CGFloat)itemAngle
 {
     if ([self angleLayoutTrend] > 0) {
