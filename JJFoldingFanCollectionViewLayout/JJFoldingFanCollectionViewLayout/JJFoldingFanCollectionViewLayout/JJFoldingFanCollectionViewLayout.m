@@ -266,7 +266,7 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
         if ([self isHorizontal]) {
             CGFloat unitOffset = self.angleDifference / self.speed;
             
-            NSInteger index = llround(proposedContentOffset.x / unitOffset);
+            NSInteger index = lround(proposedContentOffset.x / unitOffset);
             
             return CGPointMake(index * unitOffset, proposedContentOffset.y);
         }
@@ -274,7 +274,7 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
         {
             CGFloat unitOffset = self.angleDifference / self.speed;
             
-            NSInteger index = llround(proposedContentOffset.y / unitOffset);
+            NSInteger index = lround(proposedContentOffset.y / unitOffset);
             
             return CGPointMake(proposedContentOffset.x, index * unitOffset);
         }
