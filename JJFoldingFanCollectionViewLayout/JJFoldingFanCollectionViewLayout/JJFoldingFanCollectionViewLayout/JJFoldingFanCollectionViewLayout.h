@@ -147,6 +147,11 @@ typedef NS_ENUM(NSInteger, JJFoldingFanCollectionViewLayoutType)
 @property (nonatomic, assign) CGFloat speed;
 
 /**
+ 缓存attributes的最大数量(默认NSUIntegerMax个)
+ */
+@property (nonatomic, assign) NSUInteger maxmumCachedAttributes;
+
+/**
  可视角度角度范围（默认为{0,M_PI}）
  */
 @property (nonatomic, assign) JJAngleRange visibleAngleRange;

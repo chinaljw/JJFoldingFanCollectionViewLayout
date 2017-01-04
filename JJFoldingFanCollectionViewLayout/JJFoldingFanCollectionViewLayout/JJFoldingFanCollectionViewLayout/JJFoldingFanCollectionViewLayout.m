@@ -17,12 +17,39 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
     return (JJAngleRange){startAngle, angleLength};
 }
 
+#pragma mark - ========================= Attributes =========================
+@interface JJFoldingFanCollectionViewLayoutAttributes : UICollectionViewLayoutAttributes
+
+
+/**
+ offset为0时排列布局的角度信息
+ */
+@property (nonatomic, copy) NSNumber *layoutAngle;
+
+@end
+
+@implementation JJFoldingFanCollectionViewLayoutAttributes
+
+@end
+
+#pragma mark - ========================= Layout =========================
 @interface JJFoldingFanCollectionViewLayout ()
 
 @property (nonatomic, assign) NSInteger itemCount;
 
 //滚到开始角度的index
 @property (nonatomic, assign) NSInteger currentMarkIndex;
+
+/**
+ attributes缓存(只会缓存offset为0时排列布局的角度信息)
+ */
+@property (nonatomic, strong) NSMutableDictionary<NSString *, JJFoldingFanCollectionViewLayoutAttributes *> *attributesCaches;
+
+
+/**
+ 可见的第item的index
+ */
+@property (nonatomic, assign) NSInteger visiableIndex;
 
 @end
 
@@ -37,6 +64,14 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
         }
     }
     _currentMarkIndex = currentMarkIndex;
+}
+
+- (NSMutableDictionary<NSString *, JJFoldingFanCollectionViewLayoutAttributes *> *)attributesCaches
+{
+    if (!_attributesCaches) {
+        _attributesCaches = [[NSMutableDictionary<NSString *, JJFoldingFanCollectionViewLayoutAttributes *> alloc] init];
+    }
+    return _attributesCaches;
 }
 
 #pragma mark - Override
@@ -100,31 +135,45 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
     
     NSMutableArray<__kindof UICollectionViewLayoutAttributes *> *attrsList = [[NSMutableArray<__kindof UICollectionViewLayoutAttributes *> alloc] init];
     
-    //有待优化
-    for (NSInteger index = 0; index < self.itemCount; index ++) {
+    for (NSInteger index = self.visiableIndex == 0 ? 0 : self.visiableIndex - 1; index < self.itemCount; index ++) {
         
         UICollectionViewLayoutAttributes *attrs = [self layoutAttributesForItemAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
         
-        if (!attrs.hidden && (CGRectContainsRect(rect, attrs.frame) || CGRectIntersectsRect(rect, attrs.frame))) {
+        if (!attrs.hidden) {
             [attrsList addObject:attrs];
         }
         else
         {
             if (attrsList.count > 0) {
+                self.visiableIndex = attrsList.firstObject.indexPath.row;
                 return attrsList;
             }
         }
     
     }
+    
+    self.visiableIndex = attrsList.firstObject.indexPath.row;
     return attrsList;
 }
 
 - (nullable UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    UICollectionViewLayoutAttributes *attrs = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
+    
+    JJFoldingFanCollectionViewLayoutAttributes *attrs = [self cachedAttribuesForIndexPath:indexPath];
+    
+    if (!attrs) {
+        attrs = [JJFoldingFanCollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
+        [self cacheAttributes:attrs];
+    }
     
     //排列角度
-    CGFloat itemAngle =  [self angleLayoutTrend] * indexPath.row * self.angleDifference + [self angleLayoutTrend] * self.startAngle + [self startAngleOffset];
+    NSNumber *layoutAngle = attrs.layoutAngle;
+    if (!layoutAngle) {
+        layoutAngle = @([self angleLayoutTrend] * indexPath.row * self.angleDifference + [self angleLayoutTrend] * self.startAngle + [self startAngleOffset]);
+        attrs.layoutAngle = layoutAngle;
+    }
+    
+    CGFloat itemAngle = layoutAngle.doubleValue;
     
     //offset
     CGFloat offset = [self isHorizontal] ? self.collectionView.contentOffset.x : self.collectionView.contentOffset.y;
@@ -294,6 +343,7 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
     self.scrollDirection = JJFoldingFanCollectionViewLayoutScrollDirectionHorizontal;
     self.speed = M_PI / 180.f;
     self.dynamic = YES;
+    self.maxmumCachedAttributes = NSUIntegerMax;
 }
 
 - (BOOL)angleIsVisible:(CGFloat)itemAngle
@@ -345,6 +395,19 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
 - (CGFloat)angleDifferenceForStartAngle:(CGFloat)itemAngle
 {
    return [self angleLayoutTrend] * self.startAngle + [self startAngleOffset] - itemAngle;
+}
+
+- (JJFoldingFanCollectionViewLayoutAttributes *)cachedAttribuesForIndexPath:(NSIndexPath *)indexPath
+{
+    return [self.attributesCaches valueForKey:[@(indexPath.row) stringValue]];
+}
+
+- (void)cacheAttributes:(JJFoldingFanCollectionViewLayoutAttributes *)attributes
+{
+    if (self.attributesCaches.count == self.maxmumCachedAttributes) {
+        [self.attributesCaches removeObjectForKey:self.attributesCaches.allKeys.firstObject];
+    }
+    [self.attributesCaches setValue:attributes forKey:[@(attributes.indexPath.row) stringValue]];
 }
 
 #pragma mark - Public
