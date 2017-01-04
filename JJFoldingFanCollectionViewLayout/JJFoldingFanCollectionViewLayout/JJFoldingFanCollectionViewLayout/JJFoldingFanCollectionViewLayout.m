@@ -88,7 +88,7 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
     }
     
     //关闭预加载，不关会有奇怪的效果，暂时没想去解决
-    if (self.collectionView.prefetchingEnabled) {
+    if ([self.collectionView respondsToSelector:@selector(isPrefetchingEnabled)] && self.collectionView.prefetchingEnabled) {
         self.collectionView.prefetchingEnabled = NO;
     }
     
@@ -303,7 +303,7 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
     }
     else
     {
-        return (itemAngle > - self.angleDifference  + 0 && itemAngle <  + M_PI + self.angleDifference);
+        return (itemAngle < self.angleDifference + [self angleLayoutTrend] * self.visibleAngleRange.startAngle + [self startAngleOffset] && itemAngle > [self angleLayoutTrend] * (self.visibleAngleRange.startAngle + self.visibleAngleRange.angleLength) - self.angleDifference + [self startAngleOffset]);
     }
 }
 
