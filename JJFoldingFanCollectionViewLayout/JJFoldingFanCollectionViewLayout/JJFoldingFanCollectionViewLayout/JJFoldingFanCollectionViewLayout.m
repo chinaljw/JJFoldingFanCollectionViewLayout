@@ -20,7 +20,6 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
 #pragma mark - ========================= Attributes =========================
 @interface JJFoldingFanCollectionViewLayoutAttributes : UICollectionViewLayoutAttributes
 
-
 /**
  offset为0时排列布局的角度信息
  */
@@ -343,7 +342,6 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
     self.scrollDirection = JJFoldingFanCollectionViewLayoutScrollDirectionHorizontal;
     self.speed = M_PI / 180.f;
     self.dynamic = YES;
-    self.maxmumCachedAttributes = NSUIntegerMax;
 }
 
 - (BOOL)angleIsVisible:(CGFloat)itemAngle
@@ -399,15 +397,23 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
 
 - (JJFoldingFanCollectionViewLayoutAttributes *)cachedAttribuesForIndexPath:(NSIndexPath *)indexPath
 {
-    return [self.attributesCaches valueForKey:[@(indexPath.row) stringValue]];
+    if (self.maxmumCachedAttributes != 0) {
+        return [self.attributesCaches valueForKey:[@(indexPath.row) stringValue]];
+    }
+    else
+    {
+        return nil;
+    }
 }
 
 - (void)cacheAttributes:(JJFoldingFanCollectionViewLayoutAttributes *)attributes
 {
-    if (self.attributesCaches.count == self.maxmumCachedAttributes) {
-        [self.attributesCaches removeObjectForKey:self.attributesCaches.allKeys.firstObject];
+    if (self.maxmumCachedAttributes != 0) {
+        if (self.attributesCaches.count == self.maxmumCachedAttributes) {
+            [self.attributesCaches removeObjectForKey:self.attributesCaches.allKeys.firstObject];
+        }
+        [self.attributesCaches setValue:attributes forKey:[@(attributes.indexPath.row) stringValue]];
     }
-    [self.attributesCaches setValue:attributes forKey:[@(attributes.indexPath.row) stringValue]];
 }
 
 #pragma mark - Public
