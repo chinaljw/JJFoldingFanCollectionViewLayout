@@ -122,12 +122,12 @@ typedef NS_ENUM(NSInteger, JJFoldingFanCollectionViewLayoutType)
 @property (nonatomic, assign) CGFloat endAngle;
 
 /**
- 卡片center 到ancho的距离, 类型为圆形时会用到
+ 卡片center 到origin的距离, 类型为圆形时会用到
  */
 @property (nonatomic, assign) CGFloat radius;
 
 /**
- 场半轴，类型为椭圆时会用到
+ 长半轴，类型为椭圆时会用到
  */
 @property (nonatomic, assign) CGFloat a;
 
