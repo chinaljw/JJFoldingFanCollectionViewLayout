@@ -59,7 +59,7 @@ JJAngleRange JJMakeAngleRange(CGFloat startAngle, CGFloat angleLength)
 {
     if (_currentMarkIndex != currentMarkIndex) {
         if ([self.delegate respondsToSelector:@selector(layout:didCardAtIndexPathScrollToStartAngle:)]) {
-            [self.delegate layout:self didCardAtIndexPathScrollToStartAngle:[NSIndexPath indexPathForRow:self.currentMarkIndex inSection:0]];
+            [self.delegate layout:self didCardAtIndexPathScrollToStartAngle:[NSIndexPath indexPathForRow:currentMarkIndex inSection:0]];
         }
     }
     _currentMarkIndex = currentMarkIndex;
